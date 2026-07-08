@@ -1,0 +1,31 @@
+baseURL = "https://go-hiera.github.io/"
+title = "go-hiera"
+disableKinds = ["taxonomy", "term", "RSS", "sitemap", "404"]
+
+[markup.goldmark.renderer]
+  unsafe = true
+
+[[params.phases]]
+  name = "hiera.yaml v5 loader"
+  status = "ready"
+  blurb = "Parses `hiera.yaml` version 5 — the `defaults` block and the ordered `hierarchy` of levels, with every path form: `path` / `paths`, `glob` / `globs`, and `mapped_paths`. Each level resolves its `datadir`, `data_hash` backend and per-level options exactly as Hiera 5 does."
+[[params.phases]]
+  name = "yaml / json backends"
+  status = "ready"
+  blurb = "The `yaml_data` backend reads through **go-ruby-yaml**'s pure-Go, Psych-faithful loader so YAML parses byte-for-byte the way MRI's Ruby does; `json_data` reads JSON. Backends are pluggable via `RegisterDataHash`, so eyaml / HOCON slot in later without touching the engine."
+[[params.phases]]
+  name = "merge engine + lookup_options"
+  status = "ready"
+  blurb = "All four merge behaviours — `first`, `unique`, `hash` and `deep` — driven by `lookup_options` (per-key and `^regex` keys), honouring `knockout_prefix` and `merge_hash_arrays`. The value assembled across every matching hierarchy level is the one Puppet's `lookup()` would return."
+[[params.phases]]
+  name = "%{...} interpolation + loop detection"
+  status = "ready"
+  blurb = "Full `%{...}` interpolation: `%{facts.x}`, `%{trusted.x}`, `%{scope('x')}`, `%{lookup('x')}` / `%{hiera('x')}`, the whole-value `%{alias('x')}`, and `%{literal('%')}` — with interpolation-loop detection that stops a key that resolves back through itself."
+[[params.phases]]
+  name = "dotted dig + defaults"
+  status = "ready"
+  blurb = "Dotted keys (`a.b.c`) dig into structured hashes and arrays, and lookups fall through to caller-supplied default values / default blocks when no level matches — the same digging and defaulting semantics Puppet exposes on `lookup()`."
+[[params.phases]]
+  name = "Ruby surface"
+  status = "planned"
+  blurb = "Downstream, not part of this engine module: the Ruby `Hiera` class and Puppet's `lookup()` / automatic data-binding surface are mapped onto this engine by the **go-ruby-hiera** consumer. This library is the data-lookup engine; the binding is the Ruby face."
